@@ -41,10 +41,28 @@ RSpec.describe GroupEvent, type: :model do
   end
 
   describe "#set_duration" do
-    
+    let(:start_time)       { Time.zone.now }
+    let(:desired_duration) { 11 }
+    let(:end_time)         { start_time + desired_duration.days }
+
+    let(:event) { build(:group_event, start_at: start_time, end_at: end_time, duration: nil) }
+
+    it "should set end time" do
+      event.save
+      expect(event.duration).to eq(desired_duration)
+    end
   end
 
   describe "#set_end_at" do
-    
+    let(:start_time)  { Time.zone.now }
+    let(:duration)    { 10 }
+    let(:desired_end) { start_time + duration.days }
+
+    let(:event) { build(:group_event, start_at: start_time, end_at: nil, duration: duration) }
+
+    it "should set end time" do
+      event.save
+      expect(event.end_at).to eq(desired_end)
+    end
   end
 end
