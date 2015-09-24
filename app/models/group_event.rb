@@ -23,9 +23,9 @@ class GroupEvent < ActiveRecord::Base
     end
 
 
-  def start_at_cannot_be_later_than_end_at
-    if start_at > end_at
-      errors.add(:start_at, "can't be later than end_at")
+    def start_at_cannot_be_later_than_end_at
+      if start_at > end_at
+        errors.add(:start_at, "can't be later than end_at")
+      end
     end
-  end
 end
