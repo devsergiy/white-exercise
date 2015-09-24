@@ -52,6 +52,6 @@ class GroupEventsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def group_event_params
-      params.require(:group_event).permit(:name, :description, :location, :start_at, :end_at, :status, :removed, :duration)
+      params.require(:group_event).permit(:name, :description, :location, :start_at, :end_at, :status, :duration)
     end
   end
