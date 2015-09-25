@@ -24,5 +24,6 @@ FactoryGirl.define do
     factory :incomplete_event, traits: [:incomplete]
     factory :published_event,  traits: [:published]
     factory :removed_event,    traits: [:removed]
+    factory :invalid_event,    traits: [:incomplete, :published]
   end
 end

@@ -19,51 +19,34 @@ require 'rails_helper'
 # that an instance is receiving a specific message.
 
 RSpec.describe GroupEventsController, type: :controller do
+  render_views
+
+  before :each do
+    request.env["HTTP_ACCEPT"] = 'application/json'
+  end
 
   # This should return the minimal set of attributes required to create a valid
   # GroupEvent. As you add validations to GroupEvent, be sure to
   # adjust the attributes here as well.
-  let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
-  }
+  let(:valid_attributes)   { attributes_for(:group_event) }
+  let(:invalid_attributes) { attributes_for(:invalid_event) }
 
-  let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
-  }
-
-  # This should return the minimal set of values that should be in the session
-  # in order to pass any filters (e.g. authentication) defined in
-  # GroupEventsController. Be sure to keep this updated too.
-  let(:valid_session) { {} }
+  let(:errors) {{ name: [ "can't be blank"] , description: ["can't be blank"] }}
+  let!(:group_event) { create(:group_event) }
 
   describe "GET #index" do
     it "assigns all group_events as @group_events" do
-      group_event = GroupEvent.create! valid_attributes
-      get :index, {}, valid_session
+      get :index
       expect(assigns(:group_events)).to eq([group_event])
+      expect(response.body).to eq([event_as_json(group_event, false)].to_json)
     end
   end
 
   describe "GET #show" do
     it "assigns the requested group_event as @group_event" do
-      group_event = GroupEvent.create! valid_attributes
-      get :show, {:id => group_event.to_param}, valid_session
+      get :show, {:id => group_event.to_param}
       expect(assigns(:group_event)).to eq(group_event)
-    end
-  end
-
-  describe "GET #new" do
-    it "assigns a new group_event as @group_event" do
-      get :new, {}, valid_session
-      expect(assigns(:group_event)).to be_a_new(GroupEvent)
-    end
-  end
-
-  describe "GET #edit" do
-    it "assigns the requested group_event as @group_event" do
-      group_event = GroupEvent.create! valid_attributes
-      get :edit, {:id => group_event.to_param}, valid_session
-      expect(assigns(:group_event)).to eq(group_event)
+      expect(response.body).to eq(event_as_json(group_event))
     end
   end
 
@@ -71,89 +54,83 @@ RSpec.describe GroupEventsController, type: :controller do
     context "with valid params" do
       it "creates a new GroupEvent" do
         expect {
-          post :create, {:group_event => valid_attributes}, valid_session
+          post :create, {:group_event => valid_attributes}
         }.to change(GroupEvent, :count).by(1)
       end
 
       it "assigns a newly created group_event as @group_event" do
-        post :create, {:group_event => valid_attributes}, valid_session
+        post :create, {:group_event => valid_attributes}
         expect(assigns(:group_event)).to be_a(GroupEvent)
         expect(assigns(:group_event)).to be_persisted
       end
 
-      it "redirects to the created group_event" do
-        post :create, {:group_event => valid_attributes}, valid_session
-        expect(response).to redirect_to(GroupEvent.last)
+      it "returns created group_event" do
+        post :create, {:group_event => valid_attributes}
+        expect(response.body).to eq(event_as_json(GroupEvent.last))
       end
     end
 
     context "with invalid params" do
       it "assigns a newly created but unsaved group_event as @group_event" do
-        post :create, {:group_event => invalid_attributes}, valid_session
+        post :create, {:group_event => invalid_attributes}
         expect(assigns(:group_event)).to be_a_new(GroupEvent)
       end
 
-      it "re-renders the 'new' template" do
-        post :create, {:group_event => invalid_attributes}, valid_session
-        expect(response).to render_template("new")
+      it "returns list of errors" do
+        post :create, {:group_event => invalid_attributes}
+        expect(response.body).to eq(errors.to_json)
       end
     end
   end
 
   describe "PUT #update" do
     context "with valid params" do
-      let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
-      }
+      let(:new_name) { "Holiday"}
+      let(:new_attributes) { {name: new_name} }
 
       it "updates the requested group_event" do
-        group_event = GroupEvent.create! valid_attributes
-        put :update, {:id => group_event.to_param, :group_event => new_attributes}, valid_session
+        put :update, {:id => group_event.to_param, :group_event => new_attributes}
         group_event.reload
-        skip("Add assertions for updated state")
+        expect(group_event.name).to eq(new_name)
+        expect(response.body).to eq(event_as_json(group_event))
       end
 
       it "assigns the requested group_event as @group_event" do
-        group_event = GroupEvent.create! valid_attributes
-        put :update, {:id => group_event.to_param, :group_event => valid_attributes}, valid_session
+        put :update, {:id => group_event.to_param, :group_event => valid_attributes}
         expect(assigns(:group_event)).to eq(group_event)
       end
 
-      it "redirects to the group_event" do
-        group_event = GroupEvent.create! valid_attributes
-        put :update, {:id => group_event.to_param, :group_event => valid_attributes}, valid_session
-        expect(response).to redirect_to(group_event)
+      it "returns group_event" do
+        put :update, {:id => group_event.to_param, :group_event => valid_attributes}
+        expect(response.body).to eq(event_as_json(group_event))
       end
     end
 
     context "with invalid params" do
       it "assigns the group_event as @group_event" do
-        group_event = GroupEvent.create! valid_attributes
-        put :update, {:id => group_event.to_param, :group_event => invalid_attributes}, valid_session
+        put :update, {:id => group_event.to_param, :group_event => invalid_attributes}
         expect(assigns(:group_event)).to eq(group_event)
       end
 
-      it "re-renders the 'edit' template" do
-        group_event = GroupEvent.create! valid_attributes
-        put :update, {:id => group_event.to_param, :group_event => invalid_attributes}, valid_session
-        expect(response).to render_template("edit")
+
+      it "returns errors" do
+
+        put :update, {:id => group_event.to_param, :group_event => invalid_attributes}
+        expect(response.body).to eq(errors.to_json)
       end
     end
   end
 
   describe "DELETE #destroy" do
     it "destroys the requested group_event" do
-      group_event = GroupEvent.create! valid_attributes
       expect {
-        delete :destroy, {:id => group_event.to_param}, valid_session
+        delete :destroy, {:id => group_event.to_param}
       }.to change(GroupEvent, :count).by(-1)
     end
 
-    it "redirects to the group_events list" do
-      group_event = GroupEvent.create! valid_attributes
-      delete :destroy, {:id => group_event.to_param}, valid_session
-      expect(response).to redirect_to(group_events_url)
+    it "returns group_events list" do
+      delete :destroy, {:id => group_event.to_param}
+      expect(response).to have_http_status(204)
     end
   end
-
 end

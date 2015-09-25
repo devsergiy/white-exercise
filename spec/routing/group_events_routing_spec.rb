@@ -7,16 +7,8 @@ RSpec.describe GroupEventsController, type: :routing do
       expect(:get => "/group_events").to route_to("group_events#index")
     end
 
-    it "routes to #new" do
-      expect(:get => "/group_events/new").to route_to("group_events#new")
-    end
-
     it "routes to #show" do
       expect(:get => "/group_events/1").to route_to("group_events#show", :id => "1")
-    end
-
-    it "routes to #edit" do
-      expect(:get => "/group_events/1/edit").to route_to("group_events#edit", :id => "1")
     end
 
     it "routes to #create" do
